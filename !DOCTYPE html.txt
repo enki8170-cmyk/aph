@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>APH 歷史向繪圖企劃</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f4f1ea; }
+        #map { height: 70vh; width: 100%; border-bottom: 5px solid #8d775f; }
+        #timeline-container { height: 30vh; padding: 20px; text-align: center; }
+        .slider { width: 80%; cursor: pointer; }
+        .info-box { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #5d4037; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="timeline-container">
+    <h1 id="year-display">年份：1800</h1>
+    <input type="range" min="1800" max="1950" value="1800" step="50" class="slider" id="yearSlider">
+    <p>拉動時間軸以查看不同歷史時期的創作標註</p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // 1. 初始化地圖 (以歐洲為中心)
+    const map = L.map('map').setView([50, 10], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // 2. 定義企劃數據 (你可以自行增加)
+    const events = [
+        { year: 1800, name: "拿破崙戰爭", pos: [48.8, 2.3], img: "https://via.placeholder.com/150", desc: "法/蘭/西與各國的衝突" },
+        { year: 1850, name: "克里米亞戰爭", pos: [45.0, 34.0], img: "https://via.placeholder.com/150", desc: "英/國、法/國與俄/羅/斯的對峙" },
+        { year: 1900, name: "美好年代", pos: [52.5, 13.4], img: "https://via.placeholder.com/150", desc: "德/意/志帝國的崛起" }
+    ];
+
+    let markers = [];
+
+    function updateMarkers(selectedYear) {
+        // 清除舊標記
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+        
+        document.getElementById('year-display').innerText = "年份：" + selectedYear;
+
+        // 篩選符合年份的事件
+        events.forEach(event => {
+            if (event.year == selectedYear) {
+                const marker = L.marker(event.pos).addTo(map)
+                    .bindPopup(`<b>${event.name}</b><br><img src="${event.img}" width="100px"><br>${event.desc}`);
+                markers.push(marker);
+            }
+        });
+    }
+
+    // 監聽滑桿
+    document.getElementById('yearSlider').addEventListener('input', function(e) {
+        updateMarkers(e.target.value);
+    });
+
+    // 初始載入
+    updateMarkers(1800);
+</script>
+</body>
+</html>
